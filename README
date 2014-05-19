@@ -1,0 +1,22 @@
+Notes:
+
+--- Hide/Show NavBar in Android
+
+http://stackoverflow.com/questions/10445157/easy-way-to-hide-system-bar-on-android-ics
+
+--- Installing the APK to /system/app
+
+http://androidforums.com/droid-all-things-root/64603-installing-apk-in-system-app-directory.html
+
+App - ROOT explorer: see the extras folder of the project.
+
+To do this:
+
+    In Root Explorer, copy the apk file you want to put in /system/app
+    Navigate to the /system/app directory
+    Tap the Mount R/W button on the top right
+    Tap Paste
+    Scroll down to the pasted apk, long press on it and select Permissions (you'll see 9 check boxes when you do this)
+    Check the Read and Write buttons for User, and only the Read boxes next to Group and Others, then tap OK (once you're done, the read/write permissions under the app name should be the same as all the other apps listed (rw-r--r--))
+    Reboot.
+
