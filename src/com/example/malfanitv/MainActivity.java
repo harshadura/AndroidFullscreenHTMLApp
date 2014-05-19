@@ -3,7 +3,9 @@ package com.example.malfanitv;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -21,7 +23,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -243,6 +247,17 @@ public class MainActivity extends Activity {
 				Runtime.getRuntime().exec("service call activity 42 s16 com.android.systemui");
 			}
 			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (id == R.id.reset) {
+			try {
+				AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+				mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, PendingIntent.getActivity(this.getBaseContext(), 0, new Intent(getIntent()), getIntent().getFlags()));
+				android.os.Process.killProcess(android.os.Process.myPid());
+				}
+			catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

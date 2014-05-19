@@ -4,21 +4,24 @@
     tools:context="com.example.test.MainActivity" >
 
     <item
+        android:id="@+id/reset"
+        android:orderInCategory="100"
+        android:title="@string/reset"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
-    
     <item
         android:id="@+id/show_navbar"
         android:orderInCategory="100"
         android:title="@string/show_navbar"
         app:showAsAction="never"/>
-    
     <item
         android:id="@+id/hide_navbar"
         android:orderInCategory="100"
         android:title="@string/hide_navbar"
         app:showAsAction="never"/>
-    
+
 </menu>
