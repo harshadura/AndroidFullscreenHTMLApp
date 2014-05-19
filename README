@@ -1,5 +1,8 @@
 Notes:
 
+--- android-support-v7-appcompat library project is needed to run this project. 
+See the extras folder of the project and include it in project properties -> Android -> Lib project.
+
 --- Hide/Show NavBar in Android
 
 http://stackoverflow.com/questions/10445157/easy-way-to-hide-system-bar-on-android-ics
