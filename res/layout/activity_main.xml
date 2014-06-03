@@ -17,5 +17,10 @@
         android:id="@+id/web_engine"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
-
+ <FrameLayout
+            android:id="@+id/customViewContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone"
+            />
 </LinearLayout>

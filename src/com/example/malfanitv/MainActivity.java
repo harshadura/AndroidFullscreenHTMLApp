@@ -10,16 +10,19 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
+import android.webkit.WebChromeClient.CustomViewCallback;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.annotation.SuppressLint;
@@ -34,10 +37,13 @@ public class MainActivity extends Activity {
 	private String webUrl;
 	private View decorView;
 	private SharedPreferences pref;
-
+    private FrameLayout customViewContainer;
+    private WebChromeClient.CustomViewCallback customViewCallback;
+    private View mCustomView;
+    
 	private WebView engine;
 
-	private String defaultURL = "http://192.168.1.120/hotel123/index.jsp";
+	private String defaultURL = "http://192.168.1.105:8086/index.jsp";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,8 @@ public class MainActivity extends Activity {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		customViewContainer = (FrameLayout) findViewById(R.id.customViewContainer);
+	      
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	
 		decorView = getWindow().getDecorView();
@@ -121,6 +129,62 @@ public class MainActivity extends Activity {
 
 		engine.setWebChromeClient(new WebChromeClient() {
 			
+
+	        private Bitmap mDefaultVideoPoster;
+	        private View mVideoProgressView;
+
+	        @Override
+	        public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
+	           onShowCustomView(view, callback);    //To change body of overridden methods use File | Settings | File Templates.
+	        }
+
+	        @Override
+	        public void onShowCustomView(View view,CustomViewCallback callback) {
+
+	            // if a view already exists then immediately terminate the new one
+	            if (mCustomView != null) {
+	                callback.onCustomViewHidden();
+	                return;
+	            }
+	            mCustomView = view;
+	            engine.setVisibility(View.GONE);
+	            customViewContainer.setVisibility(View.VISIBLE);
+	            customViewContainer.addView(view);
+	            customViewCallback = callback;
+	            
+
+	        }
+
+	        @Override
+	        public View getVideoLoadingProgressView() {
+
+	            if (mVideoProgressView == null) {
+//	                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+//	                mVideoProgressView = inflater.inflate(R.layout.video_progress, null);
+	            }
+	            return mVideoProgressView;
+	        }
+
+	        @Override
+	        public void onHideCustomView() {
+	            super.onHideCustomView();    //To change body of overridden methods use File | Settings | File Templates.
+	            if (mCustomView == null)
+	                return;
+
+	            engine.setVisibility(View.VISIBLE);
+	            customViewContainer.setVisibility(View.GONE);
+
+	            // Hide the custom view.
+	            mCustomView.setVisibility(View.GONE);
+
+	            // Remove the custom view from its container.
+	            customViewContainer.removeView(mCustomView);
+	            customViewCallback.onCustomViewHidden();
+
+	            mCustomView = null;
+	        }
+	    
+			
 			public void onProgressChanged(WebView view, int progress) {
 //				progressBar.setProgress(progress);
 			}
@@ -146,10 +210,18 @@ public class MainActivity extends Activity {
 				engine.loadUrl("javascript:(function() { var video = document.getElementsByTagName('video')[0]; video.loop = false; "
 						+ "video.addEventListener('ended', function() { video.currentTime=0.1; video.play(); }, false); video.play(); })()");
 			}
+			
+	        @Override
+	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+	            return super.shouldOverrideUrlLoading(view, url);    //To change body of overridden methods use File | Settings | File Templates.
+	        }
 		});
 		engine.getSettings().setJavaScriptEnabled(true);
 		engine.getSettings().setAllowFileAccess(true);
 		engine.getSettings().setPluginState(PluginState.ON);
+        engine.getSettings().setBuiltInZoomControls(true);
+        engine.getSettings().setSaveFormData(true);
+        
 //		engine.getSettings().setPluginsEnabled(true); 
 		
 		webUrl = pref.getString("WEB_URL", defaultURL);

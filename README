@@ -22,4 +22,17 @@ To do this:
     Scroll down to the pasted apk, long press on it and select Permissions (you'll see 9 check boxes when you do this)
     Check the Read and Write buttons for User, and only the Read boxes next to Group and Others, then tap OK (once you're done, the read/write permissions under the app name should be the same as all the other apps listed (rw-r--r--))
     Reboot.
-
+    
+    Installing the App via ADB Shell - PC to Android via ADB SHELL
+    	http://stackoverflow.com/questions/2007024/push-my-apk-to-system-app
+    
+    > adb connect 192.168.1.107:5555
+    > adb push C:\Users\user\workspace\MalfaniTV\bin\MalfaniTV.apk /sdcard/   
+   
+    > adb shell 
+    # su
+    # mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system
+    # rm /system/app/MalfaniTV.apk
+    # cat /sdcard/MalfaniTV.apk > /system/app/MalfaniTV.apk 
+    # mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
+	# exit
