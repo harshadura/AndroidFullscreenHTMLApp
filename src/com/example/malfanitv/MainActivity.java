@@ -18,7 +18,9 @@ import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebChromeClient.CustomViewCallback;
+import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
+import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -45,6 +47,7 @@ public class MainActivity extends Activity {
 
 	private String defaultURL = "http://192.168.1.105:8086/index.jsp";
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -65,6 +68,7 @@ public class MainActivity extends Activity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	
 		decorView = getWindow().getDecorView();
+		hideSystemUI();
 		
 		//int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE; // <<< for kitkat
 		int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -118,6 +122,8 @@ public class MainActivity extends Activity {
 		//////////Clearing Cache/////
 		engine.clearCache(true);
 		engine.getSettings().setAppCacheEnabled(false);
+		engine.getSettings().setRenderPriority(RenderPriority.HIGH);
+		engine.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
 		this.deleteDatabase("webview.db");
 		this.deleteDatabase("webviewCache.db");
@@ -127,76 +133,80 @@ public class MainActivity extends Activity {
 		// so we add an explicit one.
 //		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
-		engine.setWebChromeClient(new WebChromeClient() {
-			
-
-	        private Bitmap mDefaultVideoPoster;
-	        private View mVideoProgressView;
-
-	        @Override
-	        public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
-	           onShowCustomView(view, callback);    //To change body of overridden methods use File | Settings | File Templates.
-	        }
-
-	        @Override
-	        public void onShowCustomView(View view,CustomViewCallback callback) {
-
-	            // if a view already exists then immediately terminate the new one
-	            if (mCustomView != null) {
-	                callback.onCustomViewHidden();
-	                return;
-	            }
-	            mCustomView = view;
-	            engine.setVisibility(View.GONE);
-	            customViewContainer.setVisibility(View.VISIBLE);
-	            customViewContainer.addView(view);
-	            customViewCallback = callback;
-	            
-
-	        }
-
-	        @Override
-	        public View getVideoLoadingProgressView() {
-
-	            if (mVideoProgressView == null) {
-//	                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-//	                mVideoProgressView = inflater.inflate(R.layout.video_progress, null);
-	            }
-	            return mVideoProgressView;
-	        }
-
-	        @Override
-	        public void onHideCustomView() {
-	            super.onHideCustomView();    //To change body of overridden methods use File | Settings | File Templates.
-	            if (mCustomView == null)
-	                return;
-
-	            engine.setVisibility(View.VISIBLE);
-	            customViewContainer.setVisibility(View.GONE);
-
-	            // Hide the custom view.
-	            mCustomView.setVisibility(View.GONE);
-
-	            // Remove the custom view from its container.
-	            customViewContainer.removeView(mCustomView);
-	            customViewCallback.onCustomViewHidden();
-
-	            mCustomView = null;
-	        }
-	    
-			
-			public void onProgressChanged(WebView view, int progress) {
-//				progressBar.setProgress(progress);
-			}
-			
-			public boolean onConsoleMessage(ConsoleMessage cm) {
-			    Log.d("MalfaniTV", cm.message() + " -- From line "
-			                         + cm.lineNumber() + " of "
-			                         + cm.sourceId() );
-			    return true;
-			  }
-
-		});
+		FullscreenableChromeClient full = new FullscreenableChromeClient(this);
+		engine.setWebChromeClient(full);
+		
+		// For kitkat ..........
+//		engine.setWebChromeClient(new WebChromeClient() {
+//			
+//
+//	        private Bitmap mDefaultVideoPoster;
+//	        private View mVideoProgressView;
+//
+//	        @Override
+//	        public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
+//	           onShowCustomView(view, callback);    //To change body of overridden methods use File | Settings | File Templates.
+//	        }
+//
+//	        @Override
+//	        public void onShowCustomView(View view,CustomViewCallback callback) {
+//
+//	            // if a view already exists then immediately terminate the new one
+//	            if (mCustomView != null) {
+//	                callback.onCustomViewHidden();
+//	                return;
+//	            }
+//	            mCustomView = view;
+//	            engine.setVisibility(View.GONE);
+//	            customViewContainer.setVisibility(View.VISIBLE);
+//	            customViewContainer.addView(view);
+//	            customViewCallback = callback;
+//	            
+//
+//	        }
+//
+//	        @Override
+//	        public View getVideoLoadingProgressView() {
+//
+//	            if (mVideoProgressView == null) {
+////	                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+////	                mVideoProgressView = inflater.inflate(R.layout.video_progress, null);
+//	            }
+//	            return mVideoProgressView;
+//	        }
+//
+//	        @Override
+//	        public void onHideCustomView() {
+//	            super.onHideCustomView();    //To change body of overridden methods use File | Settings | File Templates.
+//	            if (mCustomView == null)
+//	                return;
+//
+//	            engine.setVisibility(View.VISIBLE);
+//	            customViewContainer.setVisibility(View.GONE);
+//
+//	            // Hide the custom view.
+//	            mCustomView.setVisibility(View.GONE);
+//
+//	            // Remove the custom view from its container.
+//	            customViewContainer.removeView(mCustomView);
+//	            customViewCallback.onCustomViewHidden();
+//
+//	            mCustomView = null;
+//	        }
+//	    
+//			
+//			public void onProgressChanged(WebView view, int progress) {
+////				progressBar.setProgress(progress);
+//			}
+//			
+//			public boolean onConsoleMessage(ConsoleMessage cm) {
+//			    Log.d("MalfaniTV", cm.message() + " -- From line "
+//			                         + cm.lineNumber() + " of "
+//			                         + cm.sourceId() );
+//			    return true;
+//			  }
+//
+//		});
 
 		engine.setWebViewClient(new FixedWebViewClient() {
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -227,6 +237,29 @@ public class MainActivity extends Activity {
 		webUrl = pref.getString("WEB_URL", defaultURL);
 		engine.loadUrl(webUrl);
 	
+	}
+	
+	// This snippet hides the system bars.
+	private void hideSystemUI() {
+	    // Set the IMMERSIVE flag.
+	    // Set the content to appear under the system bars so that the content
+	    // doesn't resize when the system bars hide and show.
+		decorView.setSystemUiVisibility(
+	                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+	              | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+	              | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+	              | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+	              | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+	              | View.SYSTEM_UI_FLAG_IMMERSIVE);
+	}
+
+	// This snippet shows the system bars. It does this by removing all the flags
+	// except for the ones that make the content appear under the system bars.
+	private void showSystemUI() {
+		decorView.setSystemUiVisibility(
+	               View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+	             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+	             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 	}
 	
 	
@@ -308,6 +341,7 @@ public class MainActivity extends Activity {
 		 */
 		else if (id == R.id.show_navbar) {
 			try {
+				showSystemUI();
 				Runtime.getRuntime().exec("am startservice --user 0 -n com.android.systemui/.SystemUIService");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -316,6 +350,7 @@ public class MainActivity extends Activity {
 		}
 		else if (id == R.id.hide_navbar) {
 			try {
+				hideSystemUI();
 				Runtime.getRuntime().exec("service call activity 42 s16 com.android.systemui");
 			}
 			catch (IOException e) {
@@ -331,6 +366,24 @@ public class MainActivity extends Activity {
 				}
 			catch (Exception e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (id == R.id.crash) {
+			try {
+				android.os.Process.killProcess(android.os.Process.myPid());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else if (id == R.id.mode) {
+			try {
+				Intent intent = new Intent(getBaseContext(), SelectionActivity.class);
+				finish();
+				startActivity(intent);
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

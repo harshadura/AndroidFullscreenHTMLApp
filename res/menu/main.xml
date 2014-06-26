@@ -4,6 +4,12 @@
     tools:context="com.example.test.MainActivity" >
 
     <item
+        android:id="@+id/mode"
+        android:orderInCategory="100"
+        android:title="@string/mode"
+        app:showAsAction="never"/>
+    
+    <item
         android:id="@+id/reset"
         android:orderInCategory="100"
         android:title="@string/reset"
@@ -22,6 +28,12 @@
         android:id="@+id/hide_navbar"
         android:orderInCategory="100"
         android:title="@string/hide_navbar"
+        app:showAsAction="never"/>
+    
+    <item
+        android:id="@+id/crash"
+        android:orderInCategory="100"
+        android:title="@string/crash"
         app:showAsAction="never"/>
 
 </menu>
